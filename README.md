@@ -12,15 +12,9 @@ It provides a "fallback" stream for when a main stream disconnects, so the strea
 ## Configuration
 Configuration is done in `config.sh`, there are a few things you must change in this file:
 
-* `offfi`
+* `rtmpi_fallback`
 
-   The file to loop when the main stream is offline. This should be the full path to the file, and it must be in a location that is readable by nginx.
-
-   The file should have as close as possible to the same encoding parameters as your actual stream, including resolution and bitrate.
-
-* `secret`
-
-   The "stream key" for streamRIP, should be a random, unguessable string. Note that this does *not* need to be the stream key for the service you're streaming on, it is only used by streamRIP.
+   The back upped stream which play when main stream goes down. The stream should be as close as possible to the same encoding parameters as your actual stream, including resolution and bitrate.
 
 * `rtmpe`
 

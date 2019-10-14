@@ -7,33 +7,33 @@ if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
 
 me="`basename $0`"
 
-exec 199>$offlo
+exec 199>$fallbacklo
 if ! flock -xn 199; then
 	errcho "[$me] Failed to aquire lock, exiting..." && exit 1
 fi
 
 cleanup(){
-	if [[ -f $offpidfi ]]; then
-		errcho "[$me] Removing Offline pid file..."
-		rm -f $offpidfi
+	if [[ -f $fallbackpidfi ]]; then
+		errcho "[$me] Removing Fallback pid file..."
+		rm -f $fallbackpidfi
 	fi
-	errcho "[$me] Removing Offline lock file..."
+	errcho "[$me] Removing Fallback lock file..."
 	flock -u 199
-	flock -xn 199 && rm -f $offlo
+	flock -xn 199 && rm -f $fallbacklo
 }
 
 trap cleanup EXIT
 
-if [[ -f $onpidfi ]]; then
-	onpid=$(<$onpidfi)
-	errcho "[$me] Stopping online stream (pid $onpid)..."
-	rm -f $onpidfi
-	kill $onpid
+if [[ -f $originpidfi ]]; then
+	originpid=$(<$originpidfi)
+	errcho "[$me] Stopping online stream (pid $originpid)..."
+	rm -f $originpidfi
+	kill $originpid
 fi
 
 errcho "[$me] Starting offline stream..."
-ffmpeg -loglevel warning -stream_loop -1 -re -i $offfi -c copy -f mpegts pipe:1 > $pfi &
-offpid=$!
-errcho "[$me] Offline stream pid $offpid"
-echo $offpid > $offpidfi
-wait $offpid
+ffmpeg -loglevel warning -i $rtmpi_fallback -c copy -f mpegts pipe:1 > $pfi &
+fallbackpid=$!
+errcho "[$me] Fallback stream pid $fallbackpid"
+echo $fallbackpid > $fallbackpidfi
+wait $fallbackpid
